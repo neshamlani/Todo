@@ -1,0 +1,7 @@
+.wrapper {
+  background-color: rgba(122, 121, 121, 0.425);
+  padding: 10px;
+  border-radius: 10px;
+  height: calc(100vh - 200px);
+  overflow-y: auto;
+}
