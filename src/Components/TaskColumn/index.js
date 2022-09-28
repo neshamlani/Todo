@@ -17,7 +17,9 @@ const TaskColumn = ({ columnData }) => {
           <div>{title}</div>
           <div>
             {data.length > 0 &&
-              data.map((dt, i) => <TaskCard taskData={dt} key={i} index={i} />)}
+              data.map((dt, i) => (
+                <TaskCard taskData={dt} key={dt.id} index={i} />
+              ))}
           </div>
           {provided.placeholder}
         </div>

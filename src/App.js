@@ -16,22 +16,22 @@ const listInitialState = [
   {
     title: "To Do",
     data: [],
-    id: 1,
+    id: 0,
   },
   {
     title: "In Progress",
     data: [],
-    id: 2,
+    id: 1,
   },
   {
     title: "On Hold",
     data: [],
-    id: 3,
+    id: 2,
   },
   {
     title: "Completed",
     data: [],
-    id: 4,
+    id: 3,
   },
 ];
 
@@ -39,34 +39,39 @@ function App() {
   const [addTodo, setTodo] = useState(initialState);
   const [todoList, setTodoList] = useState(listInitialState);
 
+  //Function to handle input change
   const handleChange = ({ target: { name, value } }) =>
     setTodo({ ...addTodo, [name]: value });
 
+  //Function which adds new todo item
   const handleAdd = () => {
     let todo = todoList[0];
     todo = {
       ...todo,
       data: [...todo.data, { ...addTodo, id: new Date().getTime() }],
     };
-    setTodoList([todo, ...todoList.slice(1)]);
+    setTodoList([todo, ...todoList.slice(1)]); //Appended updated first column back and spread rest of the columns
     setTodo(initialState);
   };
 
+  //Function which handles drag end
   const onDragEnd = (result) => {
-    console.log("result", result);
     if (!result.destination) {
       return;
     }
     const { source, destination } = result;
-    const { droppableId: sourceId, index: sourceIndex } = source;
-    const { droppableId: destinationId, index: destinationIndex } = destination;
-    const sourceData = todoList.find((todo) => todo.id === +sourceId);
-    console.log("sourceData", sourceData);
+    const { droppableId: sourceId, index: sourceIndex } = source; // destructing source data
+    const { droppableId: destinationId, index: destinationIndex } = destination; // destructing destination data
+    let updatedTodo = [...todoList]; //Shallow copy
+    let sourceData = updatedTodo[+sourceId]; //Fetch the current column
     if (sourceId === destinationId) {
-      console.log("Same column");
-      let data = sourceData.data;
-      const currentData = data[sourceIndex];
-      data = [...data.slice(0, sourceIndex), ...data.slice(sourceIndex + 1)];
+      let data = sourceData.data; //Get the data of current column
+      const currentData = data[+sourceIndex]; //Get the data of the card which was dragged
+      data = [...data.slice(0, +sourceIndex), ...data.slice(+sourceIndex + 1)]; //Remove that card from the array
+      data.splice(+destinationIndex, 0, currentData); //Append the card to the updated location
+      sourceData.data = data; //Update the array back to column
+      updatedTodo[+sourceId] = sourceData; //Update the column back to the complete list
+      setTodoList(updatedTodo); //Update the state with the updated list and re-render the UI
     }
     if (sourceId !== destinationId) {
       const destinationData = todoList.find(
