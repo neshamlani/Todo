@@ -64,20 +64,24 @@ function App() {
     const { droppableId: destinationId, index: destinationIndex } = destination; // destructing destination data
     let updatedTodo = [...todoList]; //Shallow copy
     let sourceData = updatedTodo[+sourceId]; //Fetch the current column
+    let data = sourceData.data; //Get the data of current column
+    const currentData = data[+sourceIndex]; //Get the data of the card which was dragged
+    data = [...data.slice(0, +sourceIndex), ...data.slice(+sourceIndex + 1)]; //Remove that card from the array
     if (sourceId === destinationId) {
-      let data = sourceData.data; //Get the data of current column
-      const currentData = data[+sourceIndex]; //Get the data of the card which was dragged
-      data = [...data.slice(0, +sourceIndex), ...data.slice(+sourceIndex + 1)]; //Remove that card from the array
       data.splice(+destinationIndex, 0, currentData); //Append the card to the updated location
       sourceData.data = data; //Update the array back to column
       updatedTodo[+sourceId] = sourceData; //Update the column back to the complete list
       setTodoList(updatedTodo); //Update the state with the updated list and re-render the UI
     }
     if (sourceId !== destinationId) {
-      const destinationData = todoList.find(
-        (todo) => todo.id === +destinationId
-      );
-      console.log("Different column");
+      sourceData.data = data; //Update the array back to column
+      updatedTodo[+sourceId] = sourceData; //Update the column back to the complete list
+      let destinationData = updatedTodo[+destinationId];
+      let destData = destinationData.data;
+      destData.splice(+destinationIndex, 0, currentData); //Append the card to the updated location
+      destinationData.data = destData; //Update the array back to column
+      updatedTodo[+destinationId] = destinationData; //Update the column back to the complete list
+      setTodoList(updatedTodo); //Update the state with the updated list and re-render the UI
     }
   };
 
